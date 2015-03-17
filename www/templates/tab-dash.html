@@ -1,0 +1,63 @@
+<ion-view view-title="Dashboard">
+    <ion-content class="padding">
+        <div class="list card">
+            <div class="item item-divider">Heart Rate</div>
+            <label class="item item-input item-select">
+                <div class="input-label">
+                    Day
+                </div>
+                <select>
+                    <option>Day 1</option>
+                    <option selected>Day 2</option>
+                    <option>Day 3</option>
+                </select>
+            </label>
+            <label class="item item-input item-select">
+                <div class="input-label">
+                    Hour
+                </div>
+                <select>
+                    <option selected>01:45 - 2:45</option>
+                    <option>02:45 - 3:45</option>
+                    <option>03:45 - 4:45</option>
+                </select>
+            </label>
+            <div class="item item-body">
+                <hz-line-chart val="data"></hz-line-chart>
+            </div>
+            <div class="item tabs tabs-secondary">
+                <div class="tab-item">
+                    Hour
+                </div>
+                <div class="tab-item">
+                    Day
+                </div>
+            </div>
+        </div>
+
+        <!--     <div class="list card">
+      <div class="item item-divider">Recent Updates</div>
+      <div class="item item-body">
+        <div>
+          There is a fire in <b>sector 3</b>
+        </div>
+      </div>
+    </div>
+    <div class="list card">
+      <div class="item item-divider">Health</div>
+      <div class="item item-body">
+        <div>
+          You ate an apple today!
+        </div>
+      </div>
+    </div>
+    <div class="list card">
+      <div class="item item-divider">Upcoming</div>
+      <div class="item item-body">
+        <div>
+          You have <b>29</b> meetings on your calendar tomorrow.
+        </div>
+      </div>
+    </div> -->
+    </ion-content>
+</ion-view>
