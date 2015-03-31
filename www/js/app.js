@@ -93,10 +93,10 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
         var margin = {
                 top: 20,
                 right: 0,
-                bottom: 30,
+                bottom: 50,
                 left: 35
             },
-            ratio = 0.40,
+            ratio = 0.50,
             width, height, svg, chartW, chartH;
 
         function draw(svg, data) {
@@ -137,8 +137,35 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
             svg.append("g")
                 .attr("class", "x axis")
                 .attr("transform", "translate(0," + chartH + ")")
-                .call(d3.svg.axis().scale(timeX).ticks(Math.ceil(chartW / X_TICK_W)).tickFormat(d3.time.format("%H:%M")).orient("down"));
+                .call(d3.svg.axis().scale(timeX).ticks(Math.ceil(chartW / X_TICK_W)).tickFormat(d3.time.format.utc("%H:%M")).orient("down"));
 
+            var yLabelOffset = {
+                y: -3,
+                x: 6
+            };
+
+            //y label
+            //reference: http://stackoverflow.com/questions/11189284/d3-axis-labeling
+            svg.append("text")
+                .attr("x", yLabelOffset.x)
+                .attr("y", yLabelOffset.y)
+                .attr("class", "label")
+                .text(scope.labelY);
+
+            // var yLabelOffset = {
+            //     x: ""
+            // }
+
+            var xLabelOffset = {
+                y: 36
+            }
+
+            svg.append("text")
+                .attr("text-anchor", "middle")
+                .attr("x", chartW/2)
+                .attr("y", chartH + xLabelOffset.y)
+                .attr("class", "label")
+                .text(scope.labelX);
 
             var path = svg.append("g")
                 .append("path")
@@ -205,7 +232,9 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
     return {
         restrict: 'E',
         scope: {
-            val: "="
+            val: "=",
+            labelX: "=",
+            labelY: "="
         },
         link: link
     }

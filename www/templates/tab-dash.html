@@ -6,25 +6,25 @@
                 <div class="input-label">
                     Day
                 </div>
-                <select>
-                    <option>Day 1</option>
-                    <option selected>Day 2</option>
-                    <option>Day 3</option>
+                <select ng-model="selected.dayIdx">
+                    <option ng-repeat="day in days" ng-value="$index">{{day}}</option>
                 </select>
             </label>
             <label class="item item-input item-select">
                 <div class="input-label">
                     Hour
                 </div>
-                <select>
-                    <option selected>01:45 - 2:45</option>
-                    <option>02:45 - 3:45</option>
-                    <option>03:45 - 4:45</option>
+                <select ng-model="selected.hourIdx">
+                    <option ng-repeat="hour in hours" ng-value="$index">{{hour}}</option>
                 </select>
             </label>
             <div class="item item-body">
-                <hz-line-chart val="data"></hz-line-chart>
+                <hz-line-chart val="chartInfo.data" label-x="chartInfo.labelX" label-y="chartInfo.labelY"></hz-line-chart>
+
+                <p>Selected day idx: {{selectedDayIdx}}</p>
+                <p>Selected hour idx: {{selectedHourIdx}}</p>
             </div>
+
             <div class="item tabs tabs-secondary">
                 <div class="tab-item">
                     Hour
