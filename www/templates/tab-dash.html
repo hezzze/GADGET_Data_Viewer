@@ -1,7 +1,7 @@
 <ion-view view-title="Dashboard">
-    <ion-content class="padding">
-        <div class="list card">
-            <div class="item item-divider">Heart Rate</div>
+    <ion-content class="padding" overflow-scroll="true">
+        <div ng-repeat="card in cards" ng-controller="CardCtrl" ng-init="init(card)" class="list card">
+            <div class="item item-divider">{{title}}</div>
             <label class="item item-input item-select">
                 <div class="input-label">
                     Day
@@ -19,7 +19,7 @@
                 </select>
             </label>
             <div class="item item-body">
-                <hz-line-chart val="chartInfo.data" label-x="chartInfo.labelX" label-y="chartInfo.labelY"></hz-line-chart>
+                <hz-line-chart val="chartData" label-x="chartLabelX" label-y="chartLabelY"></hz-line-chart>
 
                 <p>Selected day idx: {{selected.dayIdx}}</p>
                 <p>Selected hour idx: {{selected.hourIdx}}</p>

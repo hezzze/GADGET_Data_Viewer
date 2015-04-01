@@ -2,6 +2,28 @@ angular.module('starter.controllers', [])
 
 .controller('DashCtrl', function($scope, $http) {
 
+
+    function Card (title, id, labelX, labelY) {
+        this.title = title;
+        this.id = id
+        this.chartLabelX = labelX;
+        this.chartLabelY = labelY;
+    }
+
+    $scope.cards = [new Card("Heart Rate","heart_rate","time(hh:mm)", "beats/min"), new Card("Skin Temperature","skin_temperature", "time(hh:mm)", "degree(celcius)")];
+
+
+})
+
+.controller('CardCtrl', function($scope, $http) {
+
+    $scope.init = function(card) {
+        $scope.chartLabelX = card.chartLabelX;
+        $scope.chartLabelY = card.chartLabelY;
+        $scope.title = card.title;
+        $scope.id = card.id;
+    }
+
     $scope.days = ["Day 1", "Day 2"];
     $scope.selected = {
       dayIdx: 0,
@@ -17,7 +39,7 @@ angular.module('starter.controllers', [])
 
         var req = {
           method: 'GET',
-          url: "http://s3-reader.herokuapp.com/data?category=heart_rate&hour="+$scope.selected.hourIdx+"&day="+$scope.selected.dayIdx,
+          url: "http://s3-reader.herokuapp.com/data?category=" + $scope.id + "&hour="+$scope.selected.hourIdx+"&day="+$scope.selected.dayIdx,
           headers: {
             'Content-Type': "application/json"
           }
@@ -28,13 +50,7 @@ angular.module('starter.controllers', [])
 
                 console.log(data);
 
-                var heartRateInfo = {
-                    data: data,
-                    labelX: "time(hh:mm)",
-                    labelY: "beats/min"
-                }
-
-                $scope.chartInfo = heartRateInfo;
+                $scope.chartData = data;
             })
             .error(function() {
                 console.log("Update failed");
@@ -42,9 +58,6 @@ angular.module('starter.controllers', [])
     };
 
     $scope.$watchGroup(["selected.dayIdx", "selected.hourIdx"], updateChart);
-
-
-
 })
 
 .controller('ChatsCtrl', function($scope, Chats) {

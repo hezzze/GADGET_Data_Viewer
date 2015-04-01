@@ -175,8 +175,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
 
         }
 
-        function getParentComputedInnerWidth(element) {
-            var container = element.parentElement;
+        function getComputedInnerWidth(container) {
 
             var style = window.getComputedStyle(container);
 
@@ -192,7 +191,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
         function resize(data) {
             var container = element[0].parentElement;
 
-            width = getParentComputedInnerWidth(element[0]);
+            width = getComputedInnerWidth(container);
             chartW = width - margin.right - margin.left;
 
             height = ratio * width;
@@ -221,7 +220,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
         });
 
         //TODO resiponsiveness
-        d3.select(window).on('resize', function() {
+        window.addEventListener('resize', function() {
             resize(scope.val);
             draw(svg, scope.val);
         });
