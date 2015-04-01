@@ -7,7 +7,7 @@
                     Day
                 </div>
                 <select ng-model="selected.dayIdx">
-                    <option ng-repeat="day in days" ng-value="$index">{{day}}</option>
+                    <option ng-repeat="day in days" ng-value="$index" ng-selected="$first">{{day}}</option>
                 </select>
             </label>
             <label class="item item-input item-select">
@@ -15,7 +15,7 @@
                     Hour
                 </div>
                 <select ng-model="selected.hourIdx">
-                    <option ng-repeat="hour in hours" ng-value="$index">{{hour}}</option>
+                    <option ng-repeat="hour in hours" ng-value="$index" ng-selected="$first">{{hour}}</option>
                 </select>
             </label>
             <div class="item item-body">
