@@ -1,7 +1,8 @@
 angular.module('starter.controllers', [])
 
-.controller('DashCtrl', function($scope, $http) {
+.controller('DashCtrl', function($scope, $stateParams, $http, Users) {
 
+    $scope.user = Users.get($stateParams.userId);
 
     function Card (title, id, labelX, labelY) {
         this.title = title;
@@ -60,15 +61,8 @@ angular.module('starter.controllers', [])
     $scope.$watchGroup(["selected.dayIdx", "selected.hourIdx"], updateChart);
 })
 
-.controller('ChatsCtrl', function($scope, Chats) {
-    $scope.chats = Chats.all();
-    $scope.remove = function(chat) {
-        Chats.remove(chat);
-    }
-})
-
-.controller('ChatDetailCtrl', function($scope, $stateParams, Chats) {
-    $scope.chat = Chats.get($stateParams.chatId);
+.controller('UsersCtrl', function($scope, Users){
+    $scope.users = Users.all();
 })
 
 .controller('SettingsCtrl', function($scope) {

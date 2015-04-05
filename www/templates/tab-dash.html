@@ -1,4 +1,4 @@
-<ion-view view-title="Dashboard">
+<ion-view view-title="{{user.name}}">
     <ion-content class="padding" overflow-scroll="true">
         <div ng-repeat="card in cards" ng-controller="CardCtrl" ng-init="init(card)" class="list card">
             <div class="item item-divider">{{title}}</div>

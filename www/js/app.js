@@ -30,7 +30,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
     $stateProvider
 
     // setup an abstract state for the tabs directive
-        .state('tab', {
+    .state('tab', {
         url: "/tab",
         abstract: true,
         templateUrl: "templates/tabs.html"
@@ -42,30 +42,23 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
         url: '/dash',
         views: {
             'tab-dash': {
+                templateUrl: 'templates/tab-users.html',
+                controller: 'UsersCtrl'
+            }
+        }
+    })
+
+
+
+    .state('tab.user', {
+        url: '/user/:userId',
+        views: {
+            'tab-dash': {
                 templateUrl: 'templates/tab-dash.html',
                 controller: 'DashCtrl'
             }
         }
     })
-
-    .state('tab.chats', {
-            url: '/chats',
-            views: {
-                'tab-chats': {
-                    templateUrl: 'templates/tab-chats.html',
-                    controller: 'ChatsCtrl'
-                }
-            }
-        })
-        .state('tab.chat-detail', {
-            url: '/chats/:chatId',
-            views: {
-                'tab-chats': {
-                    templateUrl: 'templates/chat-detail.html',
-                    controller: 'ChatDetailCtrl'
-                }
-            }
-        })
 
     .state('tab.settings', {
         url: '/settings',
@@ -162,7 +155,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
 
             svg.append("text")
                 .attr("text-anchor", "middle")
-                .attr("x", chartW/2)
+                .attr("x", chartW / 2)
                 .attr("y", chartH + xLabelOffset.y)
                 .attr("class", "label")
                 .text(scope.labelX);
@@ -180,7 +173,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
             var style = window.getComputedStyle(container);
 
             function f(s) {
-                return parseInt(s.substr(0, s.length-2));
+                return parseInt(s.substr(0, s.length - 2));
             }
 
             return container.clientWidth - f(style.getPropertyValue('padding-left')) - f(style.getPropertyValue('padding-right'));
