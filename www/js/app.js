@@ -108,6 +108,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
             width, height, svg, chartW, chartH;
 
         function draw(svg, data) {
+
             svg.selectAll('*').remove();
 
             var accessor = function(d) {
@@ -196,7 +197,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
         }
 
 
-        function resize(data) {
+        function resize() {
             var container = element[0].parentElement;
 
             width = getComputedInnerWidth(container);
@@ -216,7 +217,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
         }
 
-        resize(scope.val);
+        resize();
 
         scope.$watch('val', function(newVal, oldVal) {
 
@@ -227,10 +228,18 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
             draw(svg, newVal);
         });
 
-        //TODO resiponsiveness
-        window.addEventListener('resize', function() {
-            resize(scope.val);
+        //since we need to destroy the listener later
+        // so we kept a reference here
+        var resizeHandler = function() {
+            resize();
             draw(svg, scope.val);
+        };
+
+        //TODO resiponsiveness
+        window.addEventListener('resize', resizeHandler);
+
+        element.on('$destroy', function() {
+            window.removeEventListener('resize', resizeHandler);
         });
 
     }
