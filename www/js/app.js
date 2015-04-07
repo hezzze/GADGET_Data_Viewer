@@ -60,6 +60,21 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
         }
     })
 
+    .state('tab.detail', {
+        url: '/user/:userId/:category',
+        params: {
+            userName: null,
+            dataPromise: null,
+            card: null
+        },
+        views: {
+            'tab-dash': {
+                templateUrl: 'templates/card-detail.html',
+                controller: 'DetailCtrl'
+            }
+        }
+    })
+
     .state('tab.settings', {
         url: '/settings',
         views: {
