@@ -1,5 +1,9 @@
 angular.module('starter.controllers', [])
 
+.controller('UsersCtrl', function($scope, Users) {
+    $scope.users = Users.all();
+})
+
 .controller('DashCtrl', function($scope, $stateParams, $http, Users) {
 
     $scope.user = Users.get($stateParams.userId);
@@ -87,21 +91,42 @@ angular.module('starter.controllers', [])
 
 })
 
-.controller('DetailCtrl', function($scope, $stateParams) {
+.controller('DetailCtrl', function($scope, $stateParams, Users, Helper) {
 
     $scope.card = $stateParams.card; 
     $scope.name = $stateParams.userName;
+    $scope.user = Users.get($stateParams.userId);
+
+
 
     $stateParams.dataPromise.success(function(data) {
         $scope.chartData = data;
+
+        var accessor = function (d) { return d.val; };
+        var maxValue = Helper.max(data, accessor);
+        var minValue = Helper.min(data, accessor);
+        var avgValue = Helper.avg(data, accessor, true);
+
+
+        var items = [{
+            label: "Maximum",
+            value: maxValue
+        }, {
+            label: "Minimum",
+            value: minValue
+        }, {
+            label: "Average",
+            value: avgValue
+        }];
+
+        $scope.items = items;
+
     });
 
 
 })
 
-.controller('UsersCtrl', function($scope, Users) {
-    $scope.users = Users.all();
-})
+
 
 .controller('SettingsCtrl', function($scope) {
     $scope.settings = {

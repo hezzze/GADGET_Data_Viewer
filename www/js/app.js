@@ -90,7 +90,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
 
 })
 
-.directive('hzLineChart', function() {
+.directive('hzLineChart', function($window) {
 
     var link = function(scope, element, attrs) {
 
@@ -107,7 +107,11 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
             ratio = 0.50,
             width, height, svg, chartW, chartH;
 
-        function draw(svg, data) {
+        var container = element[0].parentElement;
+
+        function draw(data) {
+
+            if (!data) return;
 
             svg.selectAll('*').remove();
 
@@ -197,10 +201,9 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
         }
 
 
-        function resize() {
-            var container = element[0].parentElement;
 
-            width = getComputedInnerWidth(container);
+        function resize() {
+            
             chartW = width - margin.right - margin.left;
 
             height = ratio * width;
@@ -217,6 +220,8 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
         }
 
+
+        width = getComputedInnerWidth(container);
         resize();
 
         scope.$watch('val', function(newVal, oldVal) {
@@ -225,22 +230,38 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
                 return;
             }
 
-            draw(svg, newVal);
-        });
+            draw(newVal);
+        }, attrs.strict !== undefined);
 
         //since we need to destroy the listener later
         // so we kept a reference here
         var resizeHandler = function() {
+
+            width = getComputedInnerWidth(container);
+
+            //for the case that the element might not
+            // be destroyed if going to a cached state
+            // where the parent's width will be 
+            // negative
+            if (width <= 0) return;
+
             resize();
-            draw(svg, scope.val);
+            draw(scope.val);
         };
 
-        //TODO resiponsiveness
         window.addEventListener('resize', resizeHandler);
 
         element.on('$destroy', function() {
             window.removeEventListener('resize', resizeHandler);
         });
+
+        // http://www.ng-newsletter.com/posts/d3-on-angular.html
+        // using this method seems to be causing the resize handler
+        // be called twice when the page load, and also called when
+        // state changes
+        // scope.$watch(function() {
+        //     return angular.element($window)[0].innerWidth;
+        // }, resizeHandler);
 
     }
 

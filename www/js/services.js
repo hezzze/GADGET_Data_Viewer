@@ -1,6 +1,6 @@
 angular.module('starter.services', [])
 
-.factory('Users', function(){
+.factory('Users', function() {
 
     // Some fake testing data
     var users = [{
@@ -31,6 +31,50 @@ angular.module('starter.services', [])
                 }
             }
             return null;
+        }
+    };
+})
+
+.factory('Helper', function() {
+
+    function bestfuncGen(initValue, isBetter) {
+
+        return function f(arr, accessor) {
+            var best = initValue;
+            var val;
+
+            for (var i = 0; i < arr.length; i++) {
+                val = accessor(arr[i]);
+
+                if (isBetter(val, best)) {
+                    best = val;
+                }
+            }
+
+            return best;
+        };
+
+    }
+
+    var max = bestfuncGen(-Infinity, function(a, b) {
+        return a > b;
+    });
+
+    var min = bestfuncGen(Infinity, function(a, b) {
+        return a < b;
+    });
+
+    return {
+        max: max,
+        min: min,
+        avg: function(arr, accessor, shouldRound) {
+            var sum = 0;
+
+            for (var i = 0; i < arr.length; i++) {
+                sum += accessor(arr[i]);
+            }
+
+            return shouldRound ? Math.round(sum / arr.length) : (sum / arr.length);
         }
     };
 });

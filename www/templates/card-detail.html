@@ -1,0 +1,37 @@
+<!--
+  This template loads for the 'tab.friend-detail' state (app.js)
+  'friend' is a $scope variable created in the FriendsCtrl controller (controllers.js)
+  The FriendsCtrl pulls data from the Friends service (service.js)
+  The Friends service returns an array of friend data
+-->
+<ion-view view-title="{{card.title}}">
+  <ion-content class="padding" overflow-scroll="true">
+  <div class="list card">
+  	<div class="item">
+    	<hz-line-chart val="chartData" label-x="card.chartLabelX" label-y="card.chartLabelY" strict></hz-line-chart>
+	</div>
+	<div class="item item-divider">
+		Edit
+	</div>
+	<label class="item item-input">
+		<span class="input-label">Data index</span>
+		<input type="number" ng-model="selectedDataIndex" value="0">
+	</label>
+	<div class="item range range-positive">
+		<i class="icon ion-minus-round"></i>
+		<input type="range" name="volumn" min="0" max="200" value="33" ng-model="chartData[selectedDataIndex].val">
+		<i class="icon ion-plus-round"></i>
+	</div>
+	<div class="item item-divider">
+		Statistics
+	</div>
+	<div class="item" ng-repeat="item in items">
+		{{item.label}}
+		<span class="badge badge-positive">
+			{{item.value}}
+		</span>
+	</div>
+	
+  </div> 
+  </ion-content>
+</ion-view>
