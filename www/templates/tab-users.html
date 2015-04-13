@@ -4,9 +4,10 @@
       <ion-item class="item-remove-animate item-avatar item-icon-right" ng-repeat="user in users" type="item-text-wrap" href="#/tab/user/{{user.id}}">
         <img ng-src="{{user.face}}">
         <h2>{{user.name}}</h2>
-        <p>{{user.dataCompletionRate}}</p>
+        <div>
+          <hz-progress val="user.dataCompletionRate" height="20" width-ratio="0.3"></hz-progress>
+        </div>
         <i class="icon ion-chevron-right icon-accessory"></i>
-
       </ion-item>
     </ion-list>
   </ion-content>

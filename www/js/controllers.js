@@ -96,6 +96,7 @@ angular.module('starter.controllers', [])
     $scope.card = $stateParams.card; 
     $scope.name = $stateParams.userName;
     $scope.user = Users.get($stateParams.userId);
+    $scope.selectedIdx = 0;
 
 
 

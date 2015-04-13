@@ -30,7 +30,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
     $stateProvider
 
     // setup an abstract state for the tabs directive
-    .state('tab', {
+        .state('tab', {
         url: "/tab",
         abstract: true,
         templateUrl: "templates/tabs.html"
@@ -203,7 +203,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
 
 
         function resize() {
-            
+
             chartW = width - margin.right - margin.left;
 
             height = ratio * width;
@@ -278,3 +278,150 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
 
 
 })
+
+.directive('hzProgress', function() {
+
+    var link = function(scope, element, attrs) {
+
+        var width, height, svg, barW, barH = parseInt(scope.height),
+            barRadius = 0.5 * barH,
+            widthRatio = parseFloat(scope.widthRatio),
+            threshold = parseFloat(scope.threshold) || 0.6,
+            goodColor = "#9CC588", //greenish
+            badColor = "#EF4E3A", //redish
+            margin = {
+                top: 10,
+                right: barH * 2,
+                bottom: 0,
+                left: 0
+            };
+
+        var container = element[0].parentElement;
+
+        function draw(data) {
+
+            if (!data) return;
+
+            var val = parseFloat(data);
+
+
+            svg.selectAll('*').remove();
+
+            var x = d3.scale.linear()
+                .domain([0, 1])
+                .range([0, barW]);
+
+
+            svg.append("rect")
+                .attr('width', barW)
+                .attr('height', barH)
+                .attr('rx', barRadius)
+                .attr('ry', barRadius)
+                .attr("fill", "#e9f1f4");
+
+
+            svg.append("rect")
+                .attr('width', x(val))
+                .attr('height', barH)
+                .attr('rx', barRadius)
+                .attr('ry', barRadius)
+                .attr("fill", val > threshold? goodColor : badColor);
+
+            svg.append("text")
+                .attr("x", barW + Math.round(barH/2))
+                .attr("y", Math.round(2 * barH / 3))
+                .attr("font-family", "Arial")
+                .attr("font-size", "small")
+                .text(Math.round(val * 100) + "%");
+
+        }
+
+        function getComputedInnerWidth(container) {
+
+            var style = window.getComputedStyle(container);
+
+            function f(s) {
+                return parseInt(s.substr(0, s.length - 2));
+            }
+
+            return container.clientWidth - f(style.getPropertyValue('padding-left')) - f(style.getPropertyValue('padding-right'));
+
+        }
+
+
+
+        function resize() {
+
+            barW = width - margin.right - margin.left;
+
+            height = barH + margin.top + margin.bottom;
+
+            //clear the svg
+            d3.select(element[0]).select("svg").remove();
+
+            svg = d3.select(element[0]).append('svg')
+                .attr("width", width)
+                .attr("height", height)
+                .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        }
+
+
+        width = getComputedInnerWidth(container) * widthRatio;
+        resize();
+
+        scope.$watch('val', function(newVal, oldVal) {
+
+            if (!newVal) {
+                return;
+            }
+
+            draw(newVal);
+        }, attrs.strict !== undefined);
+
+        //since we need to destroy the listener later
+        // so we kept a reference here
+        var resizeHandler = function() {
+
+            width = getComputedInnerWidth(container) * widthRatio;
+
+            //for the case that the element might not
+            // be destroyed if going to a cached state
+            // where the parent's width will be 
+            // negative
+            if (width <= 0) return;
+
+            resize();
+            draw(scope.val);
+        };
+
+        window.addEventListener('resize', resizeHandler);
+
+        element.on('$destroy', function() {
+            window.removeEventListener('resize', resizeHandler);
+        });
+
+        // http://www.ng-newsletter.com/posts/d3-on-angular.html
+        // using this method seems to be causing the resize handler
+        // be called twice when the page load, and also called when
+        // state changes
+        // scope.$watch(function() {
+        //     return angular.element($window)[0].innerWidth;
+        // }, resizeHandler);
+
+    };
+
+
+    return {
+        restrict: 'E',
+        scope: {
+            val: "=",
+            height: "@",
+            widthRatio: "@",
+            threshold: "@"
+        },
+        link: link
+    }
+
+
+});
