@@ -14,9 +14,12 @@ angular.module('starter.controllers', [])
         this.id = id
         this.chartLabelX = labelX;
         this.chartLabelY = labelY;
-        this.chartThreshold = {
-            max: threshold[0],
-            min: threshold[1]
+
+        if (threshold !== undefined) {
+            this.chartThreshold = {
+                max: threshold[0],
+                min: threshold[1]
+            };
         }
     }
 
@@ -99,7 +102,7 @@ angular.module('starter.controllers', [])
 
 .controller('DetailCtrl', function($scope, $stateParams, Users, helper) {
 
-    $scope.card = $stateParams.card; 
+    $scope.card = $stateParams.card;
     $scope.name = $stateParams.userName;
     $scope.user = Users.get($stateParams.userId);
     $scope.selectedIdx = 0;
@@ -109,7 +112,9 @@ angular.module('starter.controllers', [])
     $stateParams.dataPromise.success(function(data) {
         $scope.chartData = data;
 
-        var accessor = function (d) { return d.val; };
+        var accessor = function(d) {
+            return d.val;
+        };
         var maxValue = helper.max(data, accessor);
         var minValue = helper.min(data, accessor);
         var avgValue = helper.avg(data, accessor, true);

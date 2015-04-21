@@ -126,6 +126,9 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
 
         scope.$watchGroup(["showDots", "showBars", "filterDotsBy"], function(newVal, oldVal) {
 
+            if (!scope.val) {
+                return;
+            }
             toggleBars(scope.val);
             toggleDots(scope.val);
         });
