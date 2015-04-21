@@ -1,13 +1,3 @@
-.line {
-    fill: none;
-    stroke: #E589A2;
-    stroke-width: 1.5px;
-}
-.axis path, .axis line {
-    fill: none;
-    stroke: #000;
-    shape-rendering: crispEdges;
-}
 
 @media (max-width: 360px) and (orientation: portrait) {
     hz-line-chart {

@@ -8,26 +8,8 @@
   <ion-content class="padding" overflow-scroll="true">
   <div class="list card">
   	<div class="item">
-    	<hz-line-chart val="chartData" label-x="card.chartLabelX" label-y="card.chartLabelY" strict></hz-line-chart>
+    	<hz-line-chart val="chartData" label-x="{{card.chartLabelX}}" label-y="{{card.chartLabelY}}"></hz-line-chart>
 	</div>
-<!-- 	<div class="item item-divider">
-		Edit
-	</div>
-	<label class="item item-input">
-		<span class="input-label">Data index</span>
-		<input type="number" ng-model="selectedIdx">
-	</label>
-	<div class="item">
-		Value
-		<span class="badge badge-calm">
-			{{chartData[selectedIdx].val}}
-		</span>
-	</div> -->
-<!-- 	<div class="item range range-positive">
-		<i class="icon ion-minus-round"></i>
-		<input type="range" name="volumn" min="0" max="200" ng-model="chartData[selectedIdx].val">
-		<i class="icon ion-plus-round"></i>
-	</div> -->
 	<div class="item item-divider">
 		Statistics
 	</div>

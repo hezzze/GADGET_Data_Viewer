@@ -4,18 +4,23 @@ angular.module('starter.controllers', [])
     $scope.users = Users.all();
 })
 
-.controller('DashCtrl', function($scope, $stateParams, $http, Users) {
+.controller('DashCtrl', function($scope, $stateParams, $http, Users, settings) {
 
     $scope.user = Users.get($stateParams.userId);
+    $scope.settings = settings.get();
 
-    function Card(title, id, labelX, labelY) {
+    function Card(title, id, labelX, labelY, threshold) {
         this.title = title;
         this.id = id
         this.chartLabelX = labelX;
         this.chartLabelY = labelY;
+        this.chartThreshold = {
+            max: threshold[0],
+            min: threshold[1]
+        }
     }
 
-    $scope.cards = [new Card("Heart Rate", "heart_rate", "time(hh:mm)", "beats/min"), new Card("Skin Temperature", "skin_temperature", "time(hh:mm)", "degree(celcius)")];
+    $scope.cards = [new Card("ECG", "RawHeartValue", "time(hh:mm)", "uV")， new Card("Heart Rate", "heart_rate", "time(hh:mm)", "beats/min", [100, 60]), new Card("Skin Temperature", "skin_temperature", "time(hh:mm)", "degree(celcius)", [37.5, 32.5])];
 
 
 })
@@ -30,6 +35,7 @@ angular.module('starter.controllers', [])
         $scope.chartLabelY = card.chartLabelY;
         $scope.title = card.title;
         $scope.id = card.id;
+        $scope.chartThreshold = card.chartThreshold;
         dataPromise = getDataPromise($scope.id, $scope.selected.hourIdx, $scope.selected.dayIdx);
     }
 
@@ -91,7 +97,7 @@ angular.module('starter.controllers', [])
 
 })
 
-.controller('DetailCtrl', function($scope, $stateParams, Users, Helper) {
+.controller('DetailCtrl', function($scope, $stateParams, Users, helper) {
 
     $scope.card = $stateParams.card; 
     $scope.name = $stateParams.userName;
@@ -104,9 +110,9 @@ angular.module('starter.controllers', [])
         $scope.chartData = data;
 
         var accessor = function (d) { return d.val; };
-        var maxValue = Helper.max(data, accessor);
-        var minValue = Helper.min(data, accessor);
-        var avgValue = Helper.avg(data, accessor, true);
+        var maxValue = helper.max(data, accessor);
+        var minValue = helper.min(data, accessor);
+        var avgValue = helper.avg(data, accessor, true);
 
 
         var items = [{
@@ -129,8 +135,9 @@ angular.module('starter.controllers', [])
 
 
 
-.controller('SettingsCtrl', function($scope) {
-    $scope.settings = {
-        enableFriends: true
-    };
+.controller('SettingsCtrl', function($scope, settings) {
+
+    $scope.settings = settings.get();
+    $scope.filterDotsOptions = settings.filterDotsOptions;
+
 });

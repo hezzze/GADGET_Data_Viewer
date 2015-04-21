@@ -100,20 +100,62 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
 
         var margin = {
                 top: 20,
-                right: 0,
+                right: 30,
                 bottom: 50,
-                left: 35
+                left: 40
             },
             ratio = 0.50,
-            width, height, svg, chartW, chartH;
+            width, height, svg, chartW, chartH, barW, barH,
+            timeX, yScale;
 
         var container = element[0].parentElement;
 
-        function draw(data) {
 
+        width = getComputedInnerWidth(container);
+        resize();
+
+
+        scope.$watch('val', function(newVal, oldVal) {
+
+            if (!newVal) {
+                return;
+            }
+
+            updateChart(newVal);
+        }, attrs.strict !== undefined);
+
+        scope.$watchGroup(["showDots", "showBars", "filterDotsBy"], function(newVal, oldVal) {
+
+            toggleBars(scope.val);
+            toggleDots(scope.val);
+        });
+
+        //since we need to destroy the listener later
+        // so we kept a reference here
+        var resizeHandler = function() {
+
+            width = getComputedInnerWidth(container);
+
+            //for the case that the element might not
+            // be destroyed if going to a cached state
+            // where the parent's width will be 
+            // negative
+            if (width <= 0) return;
+
+            resize();
+            updateChart(scope.val);
+        };
+
+        window.addEventListener('resize', resizeHandler);
+
+        element.on('$destroy', function() {
+            window.removeEventListener('resize', resizeHandler);
+        });
+
+        //assumes resize is called before
+        // so svg, chartW, timeX is available
+        function updateChart(data) {
             if (!data) return;
-
-            svg.selectAll('*').remove();
 
             var accessor = function(d) {
                 return d.val;
@@ -122,11 +164,22 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
             var maxVal = d3.max(data, accessor);
             var minVal = d3.min(data, accessor);
 
-            var timeX = d3.time.scale()
+            drawChart(data, maxVal, minVal);
+            toggleBars(data);
+            toggleDots(data);
+
+        }
+
+        //assert data is not null
+        function drawChart(data, maxVal, minVal) {
+
+            svg.selectAll('*').remove();
+
+            timeX = d3.time.scale()
                 .domain([new Date(data[0].date), new Date(data[data.length - 1].date)])
                 .range([0, chartW]);
 
-            var y = d3.scale.linear()
+            yScale = d3.scale.linear()
                 .domain([minVal, maxVal])
                 .range([chartH, 0])
                 .nice();
@@ -137,20 +190,53 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
                     return timeX(new Date(d.date));
                 })
                 .y(function(d, i) {
-                    return y(d.val);
+                    return yScale(d.val);
                 });
 
 
             // y axis
-            svg.append("g")
+            var yAxis = svg.append("g")
                 .attr("class", "y axis")
-                .call(d3.svg.axis().scale(y).ticks(Math.ceil(chartH / Y_TICK_H)).orient("left"));
+                .call(d3.svg.axis().scale(yScale).ticks(Math.ceil(chartH / Y_TICK_H)).orient("left"));
+
+
 
             //x axis
-            svg.append("g")
+            var xAxis = svg.append("g")
                 .attr("class", "x axis")
                 .attr("transform", "translate(0," + chartH + ")")
                 .call(d3.svg.axis().scale(timeX).ticks(Math.ceil(chartW / X_TICK_W)).tickFormat(d3.time.format.utc("%H:%M")).orient("down"));
+
+            [xAxis, yAxis].forEach(function(axis) {
+                axis.selectAll("path line")
+                    .style({
+                        'fill': 'none',
+                        'stroke': "#000",
+                        "shape-rendering": "crispEdges"
+                    })
+            });
+
+            //if the threshold is undefined
+            // then no lines will be shown
+            for (var key in scope.threshold) {
+
+                var v = scope.threshold[key];
+
+                if (v >= maxVal || v <= minVal) continue;
+
+                svg.append("g")
+                    .attr("fill", "none")
+                    .attr("stroke", "black")
+                    .attr("stroke-width", 1)
+                    .append("line")
+                    .attr("x1", 0)
+                    .attr("x2", chartW)
+                    .attr("y1", yScale(scope.threshold[key]))
+                    .attr("y2", yScale(scope.threshold[key]))
+                    .style("stroke-dasharray", "10,5");
+            }
+
+
 
             var yLabelOffset = {
                 y: -3,
@@ -183,8 +269,13 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
             var path = svg.append("g")
                 .append("path")
                 .datum(data)
-                .attr("class", "line")
+                .style({
+                    'fill': 'none',
+                    'stroke': '#E589A2',
+                    'stroke-width': '1.5px'
+                })
                 .attr("d", line);
+
 
         }
 
@@ -200,6 +291,98 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
 
         }
 
+        // ngModels 
+        // showBars: boolean
+        function toggleBars(data) {
+
+            svg.selectAll('.bars').remove();
+
+            if (!scope.showBars) return;
+
+            // calculate the width for each bar based on the chart width
+            var barW = chartW / 3 / (data.length - 1);
+            svg.append("g")
+                .attr("class", "bars")
+                .selectAll("rect")
+                .data(data)
+                .enter().append("rect")
+                .style({
+                    "fill": "rgb(175, 215, 210)",
+                    "stroke": "none",
+                    "opacity": "0.5"
+                })
+                .attr("x", function(d) {
+                    return timeX(new Date(d.date)) - barW / 2;
+                })
+                .attr("y", function(d) {
+                    return yScale(d.val);
+                })
+                .attr("width", barW)
+                .attr("height", function(d) {
+                    return chartH - yScale(d.val);
+                });
+        }
+
+
+        // ngModels 
+        // showDots: boolean
+        // filterDotsBy: string ("normal"|"outliers" default) 
+        // threshold: {
+        //     max: integer
+        //     min: integer
+        // }
+        function toggleDots(data) {
+
+            svg.selectAll('.dots').remove();
+
+            if (!scope.showDots) return;
+
+            var filteredData;
+
+
+
+            if (!scope.filterDotsBy || !scope.threshold) {
+                filteredData = angular.copy(data);
+            } else {
+
+                var maxVal = scope.threshold.max;
+                var minVal = scope.threshold.min;
+
+                switch (scope.filterDotsBy) {
+                    case "normal":
+                        filteredData = data.filter(function(d) {
+                            return d.val <= maxVal && d.val >= minVal;
+                        });
+                        break;
+                    case "outliers":
+                        filteredData = data.filter(function(d) {
+                            return d.val > maxVal || d.val < minVal;
+                        });
+                        break;
+                    default:
+                        filteredData = angular.copy(data);
+                }
+            }
+
+            var dotRadius = chartW / 3 / (data.length - 1);
+            svg.append("g")
+                .attr("class", "dots")
+                .selectAll("circle")
+                .data(filteredData)
+                .enter().append("circle")
+                .style({
+                    "fill": "darkgray",
+                    "stroke": "none"
+                })
+                .attr("cx", function(d) {
+                    return timeX(new Date(d.date));
+                })
+                .attr("cy", function(d) {
+                    return yScale(d.val);
+                })
+                .attr("r", dotRadius);
+
+        }
 
 
         function resize() {
@@ -221,39 +404,6 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
         }
 
 
-        width = getComputedInnerWidth(container);
-        resize();
-
-        scope.$watch('val', function(newVal, oldVal) {
-
-            if (!newVal) {
-                return;
-            }
-
-            draw(newVal);
-        }, attrs.strict !== undefined);
-
-        //since we need to destroy the listener later
-        // so we kept a reference here
-        var resizeHandler = function() {
-
-            width = getComputedInnerWidth(container);
-
-            //for the case that the element might not
-            // be destroyed if going to a cached state
-            // where the parent's width will be 
-            // negative
-            if (width <= 0) return;
-
-            resize();
-            draw(scope.val);
-        };
-
-        window.addEventListener('resize', resizeHandler);
-
-        element.on('$destroy', function() {
-            window.removeEventListener('resize', resizeHandler);
-        });
 
         // http://www.ng-newsletter.com/posts/d3-on-angular.html
         // using this method seems to be causing the resize handler
@@ -270,8 +420,12 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
         restrict: 'E',
         scope: {
             val: "=",
-            labelX: "=",
-            labelY: "="
+            labelX: "@",
+            labelY: "@",
+            threshold: "=",
+            showBars: '=',
+            showDots: '=',
+            filterDotsBy: '='
         },
         link: link
     }
@@ -325,10 +479,10 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
                 .attr('height', barH)
                 .attr('rx', barRadius)
                 .attr('ry', barRadius)
-                .attr("fill", val > threshold? goodColor : badColor);
+                .attr("fill", val > threshold ? goodColor : badColor);
 
             svg.append("text")
-                .attr("x", barW + Math.round(barH/2))
+                .attr("x", barW + Math.round(barH / 2))
                 .attr("y", Math.round(2 * barH / 3))
                 .attr("font-family", "Arial")
                 .attr("font-size", "small")

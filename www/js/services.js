@@ -35,7 +35,30 @@ angular.module('starter.services', [])
     };
 })
 
-.factory('Helper', function() {
+.factory('settings', function() {
+    var settings = {
+        showBars: false,
+        showDots: true,
+        filterDotsBy: "normal"
+    };
+
+    var filterDotsOptions = [{
+        text: "Only show dots within range",
+        val: "normal"
+    }, {
+        text: "Only show outliers",
+        val: "outliers"
+    }];
+
+    return {
+        get: function() {
+            return settings;
+        },
+        filterDotsOptions: filterDotsOptions
+    };
+})
+
+.factory('helper', function() {
 
     function bestfuncGen(initValue, isBetter) {
 

@@ -1,12 +1,25 @@
 <ion-view view-title="Settings">
   <ion-content>
     <ion-list>
-    <ion-toggle  ng-model="settings.enableFriends">
-        Some setting
-    </ion-toggle>
-    <ion-toggle>
-        Some other setting
-    </ion-toggle>
+        <div class="item item-divider">
+            Chart settings
+        </div>
+        <ion-toggle ng-model="settings.showBars">
+            Show bars
+        </ion-toggle>
+        <ion-toggle ng-model="settings.showDots">
+            Show dots
+        </ion-toggle>
+        <label class="item item-input item-select">
+            <div class="input-label">
+                Filter Dots by
+            </div>
+            <select ng-model="settings.filterDotsBy"  ng-style="settings.showDots ? {} : {color: 'darkgray'}" ng-disabled="!settings.showDots">
+                <option ng-repeat="option in filterDotsOptions" ng-value="option.val" ng-selected="$first">{{option.text}}</option>
+            </select>
+        </label>
+
+
     </ion-list>
   </ion-content>
 </ion-view>
