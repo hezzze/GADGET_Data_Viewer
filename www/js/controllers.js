@@ -20,7 +20,7 @@ angular.module('starter.controllers', [])
         }
     }
 
-    $scope.cards = [new Card("ECG", "RawHeartValue", "time(hh:mm)", "uV")， new Card("Heart Rate", "heart_rate", "time(hh:mm)", "beats/min", [100, 60]), new Card("Skin Temperature", "skin_temperature", "time(hh:mm)", "degree(celcius)", [37.5, 32.5])];
+    $scope.cards = [new Card("ECG", "RawHeartValue", "time(hh:mm)", "uV"), new Card("Heart Rate", "heart_rate", "time(hh:mm)", "beats/min", [100, 60]), new Card("Skin Temperature", "skin_temperature", "time(hh:mm)", "degree(celcius)", [37.5, 32.5])];
 
 
 })
