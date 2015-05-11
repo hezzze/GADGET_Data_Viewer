@@ -1,11 +1,12 @@
 <ion-view view-title="Users">
   <ion-content>
     <ion-list>
-      <ion-item class="item-remove-animate item-avatar item-icon-right" ng-repeat="user in users" type="item-text-wrap" href="#/tab/user/{{user.id}}">
+      <div class="item item-divider">Completion rate for subjects in the GADGET Trial</div>
+      <ion-item class="item-remove-animate item-avatar item-icon-right" ng-repeat="user in users" type="item-text-wrap" href="#/tab/user/{{user.idx}}">
         <img ng-src="{{user.face}}">
-        <h2>{{user.name}}</h2>
+        <h2 title="{{user.uuid}}">{{user.name}}</h2>
         <div>
-          <hz-progress val="user.dataCompletionRate" height="20" width-ratio="0.5"></hz-progress>
+          <hz-progress val="user.totalCompletionRate" height="20" width-ratio="0.8"></hz-progress>
         </div>
         <i class="icon ion-chevron-right icon-accessory"></i>
       </ion-item>

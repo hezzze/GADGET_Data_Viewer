@@ -1,14 +1,21 @@
 <ion-view view-title="{{user.name}}">
     <ion-content class="padding" overflow-scroll="true">
-
         <div ng-repeat="card in cards" ng-controller="CardCtrl" ng-init="init(card)" class="list card">
-            <div class="item item-divider">{{title}}</div>
+            <div class="item item-divider">{{card.title}}</div>
+            <label class="item item-input item-select">
+                <div class="input-label">
+                    Devices
+                </div>
+                <select ng-model="selected.dvcIdx">
+                    <option ng-repeat="device in devices" ng-value="$index" ng-selected="$first">{{device}}</option>
+                </select>
+            </label>
             <label class="item item-input item-select">
                 <div class="input-label">
                     Day
                 </div>
                 <select ng-model="selected.dayIdx">
-                    <option ng-repeat="day in days" ng-value="$index" ng-selected="$first">{{day}}</option>
+                    <option ng-repeat="day in userInfo[devices[selected.dvcIdx]].days" ng-value="$index" ng-selected="$first">Day {{$index}}</option>
                 </select>
             </label>
             <label class="item item-input item-select">
@@ -16,20 +23,26 @@
                     Hour
                 </div>
                 <select ng-model="selected.hourIdx">
-                    <option ng-repeat="hour in hours" ng-value="$index" ng-selected="$first">{{hour}}</option>
+                    <option ng-repeat="hour in userInfo[devices[selected.dvcIdx]].days[selected.dayIdx]" ng-value="$index" ng-selected="$first">{{hour}}</option>
                 </select>
             </label>
             <div class="item item-body">
-                <hz-line-chart val="chartData" label-x="{{chartLabelX}}" label-y="{{chartLabelY}}" threshold="chartThreshold" show-bars="settings.showBars" show-dots="settings.showDots" filter-dots-by="settings.filterDotsBy"></hz-line-chart>
-
-                <p>Selected day idx: {{selected.dayIdx}}</p>
-                <p>Selected hour idx: {{selected.hourIdx}}</p>
+                <ion-spinner class="chart-spinner" ng-if="isLoading"></ion-spinner>
+                <hz-line-chart val="chartData" label-x="{{card.chartLabelX}}" label-y="{{card.chartLabelY}}" threshold="card.chartThreshold" domain="card.domain" show-bars="card.showBars" show-dots="card.showDots" filter-dots-by="card.filterDotsBy"></hz-line-chart>
+                <div class="collapse" collapse="isDetailClose">
+                    <div class="list">
+                        <div class="item" ng-repeat="item in items">
+                            {{item.label}}
+                            <span class="badge badge-positive">
+                            {{item.value}}
+                            </span>
+                        </div>
+                    </div>
+                </div>
             </div>
-
             <div class="item tabs tabs-secondary tabs-icon-left">
-                <a class="tab-item" ng-click="showDetail(user.id, user.name, id, card)">
-                    <i class="icon ion-information-circled"></i>
-                    Details
+                <a class="tab-item" ng-click="toggleDetail()">
+                    <i class="icon ion-information-circled"></i> Details
                 </a>
             </div>
         </div>

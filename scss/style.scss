@@ -1,6 +1,27 @@
+.collapse {
+    display: none;
+}
+
+.collapsing {
+    position: relative;
+    height: 0;
+    overflow: hidden;
+    -webkit-transition-property: height, visibility;
+    transition-property: height, visibility;
+    -webkit-transition-duration: 0.35s;
+    transition-duration: 0.35s;
+    -webkit-transition-timing-function: ease;
+    transition-timing-function: ease;
+}
+
+.chart-spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+}
 
 @media (max-width: 360px) and (orientation: portrait) {
     hz-line-chart {
-    	font-size: 12px;
+        font-size: 12px;
     }
-} 
+}

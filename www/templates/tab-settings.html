@@ -4,17 +4,25 @@
         <div class="item item-divider">
             Chart settings
         </div>
-        <ion-toggle ng-model="settings.showBars">
+        <label class="item item-input item-select">
+            <div class="input-label">
+                Category
+            </div>
+            <select ng-model="selectedIdx">
+                <option ng-repeat="card in cards" ng-value="$index" ng-selected="$first">{{card.title}}</option>
+            </select>
+        </label>
+        <ion-toggle ng-model="cards[selectedIdx].showBars">
             Show bars
         </ion-toggle>
-        <ion-toggle ng-model="settings.showDots">
+        <ion-toggle ng-model="cards[selectedIdx].showDots">
             Show dots
         </ion-toggle>
         <label class="item item-input item-select">
             <div class="input-label">
                 Filter Dots by
             </div>
-            <select ng-model="settings.filterDotsBy"  ng-style="settings.showDots ? {} : {color: 'darkgray'}" ng-disabled="!settings.showDots">
+            <select ng-model="cards[selectedIdx].filterDotsBy"  ng-style="cards[selectedIdx].showDots ? {} : {color: 'darkgray'}" ng-disabled="!cards[selectedIdx].showDots">
                 <option ng-repeat="option in filterDotsOptions" ng-value="option.val" ng-selected="$first">{{option.text}}</option>
             </select>
         </label>

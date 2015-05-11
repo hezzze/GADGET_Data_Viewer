@@ -8,7 +8,7 @@
   <ion-content class="padding" overflow-scroll="true">
   <div class="list card">
   	<div class="item">
-    	<hz-line-chart val="chartData" label-x="{{card.chartLabelX}}" label-y="{{card.chartLabelY}}"></hz-line-chart>
+    	<hz-line-chart val="chartData" label-x="{{card.chartLabelX}}" label-y="{{card.chartLabelY}}" threshold="card.chartThreshold" domain="card.domain" show-bars="settings.showBars" show-dots="settings.showDots" filter-dots-by="settings.filterDotsBy"></hz-line-chart>
 	</div>
 	<div class="item item-divider">
 		Statistics

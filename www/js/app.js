@@ -44,19 +44,26 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
             'tab-dash': {
                 templateUrl: 'templates/tab-users.html',
                 controller: 'UsersCtrl'
+
             }
+        },
+        resolve: {
+            users: "userService"
         }
     })
 
 
 
     .state('tab.user', {
-        url: '/user/:userId',
+        url: '/user/:userIdx',
         views: {
             'tab-dash': {
                 templateUrl: 'templates/tab-dash.html',
                 controller: 'DashCtrl'
             }
+        },
+        resolve: {
+            users: "userService"
         }
     })
 
@@ -72,6 +79,9 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
                 templateUrl: 'templates/card-detail.html',
                 controller: 'DetailCtrl'
             }
+        },
+        resolve: {
+            users: "userService"
         }
     })
 
@@ -102,7 +112,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
                 top: 20,
                 right: 30,
                 bottom: 50,
-                left: 40
+                left: 50
             },
             ratio = 0.50,
             width, height, svg, chartW, chartH, barW, barH,
@@ -157,33 +167,29 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
 
         //assumes resize is called before
         // so svg, chartW, timeX is available
-        function updateChart(data) {
-            if (!data) return;
+        function updateChart(val) {
+            if (!val) return;
 
-            var accessor = function(d) {
-                return d.val;
-            }
-
-            var maxVal = d3.max(data, accessor);
-            var minVal = d3.min(data, accessor);
-
-            drawChart(data, maxVal, minVal);
-            toggleBars(data);
-            toggleDots(data);
+            drawChart(val);
+            toggleBars(val);
+            toggleDots(val);
 
         }
 
         //assert data is not null
-        function drawChart(data, maxVal, minVal) {
+        function drawChart(val, maxVal, minVal) {
+
+            var data = val.data;
 
             svg.selectAll('*').remove();
 
             timeX = d3.time.scale()
-                .domain([new Date(data[0].date), new Date(data[data.length - 1].date)])
+                .domain([new Date(val.timeRange[0]), new Date(val.timeRange[1])])
                 .range([0, chartW]);
 
+
             yScale = d3.scale.linear()
-                .domain([minVal, maxVal])
+                .domain(scope.domain)
                 .range([chartH, 0])
                 .nice();
 
@@ -211,32 +217,45 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
                 .call(d3.svg.axis().scale(timeX).ticks(Math.ceil(chartW / X_TICK_W)).tickFormat(d3.time.format.utc("%H:%M")).orient("down"));
 
             [xAxis, yAxis].forEach(function(axis) {
-                axis.selectAll("path line")
+                axis.selectAll("path,line")
                     .style({
                         'fill': 'none',
                         'stroke': "#000",
                         "shape-rendering": "crispEdges"
-                    })
+                    });
             });
 
             //if the threshold is undefined
             // then no lines will be shown
+
+            var thresholdGroup = svg.append("g")
+                .attr("fill", "none")
+                .attr("stroke", "black")
+                .attr("stroke-width", 1);
+            var thresholdLabelGroup = svg.append("g");
+
             for (var key in scope.threshold) {
 
                 var v = scope.threshold[key];
 
                 if (v >= maxVal || v <= minVal) continue;
 
-                svg.append("g")
-                    .attr("fill", "none")
-                    .attr("stroke", "black")
-                    .attr("stroke-width", 1)
-                    .append("line")
+                var yVal = yScale(scope.threshold[key]);
+
+                thresholdGroup.append("line")
                     .attr("x1", 0)
                     .attr("x2", chartW)
-                    .attr("y1", yScale(scope.threshold[key]))
-                    .attr("y2", yScale(scope.threshold[key]))
+                    .attr("y1", yVal)
+                    .attr("y2", yVal)
                     .style("stroke-dasharray", "10,5");
+
+
+                thresholdLabelGroup.append("text")
+                    .attr("x", chartW + 10)
+                    .attr("y", yVal)
+                    .attr("class", "label")
+                    .text(key)
+                    .attr("text-anchor", "middle");
             }
 
 
@@ -296,14 +315,16 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
 
         // ngModels 
         // showBars: boolean
-        function toggleBars(data) {
+        function toggleBars(val) {
+
+            var data = val.data;
 
             svg.selectAll('.bars').remove();
 
             if (!scope.showBars) return;
 
             // calculate the width for each bar based on the chart width
-            var barW = chartW / 3 / (data.length - 1);
+            var barW = chartW / 3 / (60 - 1);
             svg.append("g")
                 .attr("class", "bars")
                 .selectAll("rect")
@@ -334,7 +355,9 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
         //     max: integer
         //     min: integer
         // }
-        function toggleDots(data) {
+        function toggleDots(val) {
+
+            var data = val.data;
 
             svg.selectAll('.dots').remove();
 
@@ -367,7 +390,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
                 }
             }
 
-            var dotRadius = chartW / 3 / (data.length - 1);
+            var dotRadius = chartW / 3 / (60 - 1);
             svg.append("g")
                 .attr("class", "dots")
                 .selectAll("circle")
@@ -426,6 +449,7 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
             labelX: "@",
             labelY: "@",
             threshold: "=",
+            domain: "=",
             showBars: '=',
             showDots: '=',
             filterDotsBy: '='
@@ -581,4 +605,66 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
     }
 
 
-});
+})
+
+
+//reference
+//https://github.com/angular-ui/bootstrap/blob/master/src/collapse/collapse.js#L31
+.directive('collapse', ['$animate', function($animate) {
+
+    return {
+        link: function(scope, element, attrs) {
+            function expand() {
+                element.removeClass('collapse').addClass('collapsing');
+                $animate.addClass(element, 'in', {
+                    to: {
+                        height: element[0].scrollHeight + 'px'
+                    }
+                }).then(expandDone);
+            }
+
+            function expandDone() {
+                element.removeClass('collapsing');
+                // element.css({
+                //     height: 'auto'
+                // });
+            }
+
+            function collapse() {
+                element
+                // IMPORTANT: The height must be set before adding "collapsing" class.
+                // Otherwise, the browser attempts to animate from height 0 (in
+                // collapsing class) to the given height here.
+                    .css({
+                        height: element[0].scrollHeight + 'px'
+                    })
+                    // initially all panel collapse have the collapse class, this removal
+                    // prevents the animation from jumping to collapsed state
+                    .removeClass('collapse')
+                    .addClass('collapsing');
+
+                $animate.removeClass(element, 'in', {
+                    to: {
+                        height: '0'
+                    }
+                }).then(collapseDone);
+            }
+
+            function collapseDone() {
+                element.css({
+                    height: '0'
+                }); // Required so that collapse works when animation is disabled
+                element.removeClass('collapsing');
+                element.addClass('collapse');
+            }
+
+            scope.$watch(attrs.collapse, function(shouldCollapse) {
+                if (shouldCollapse) {
+                    collapse();
+                } else {
+                    expand();
+                }
+            });
+        }
+    };
+}]);
