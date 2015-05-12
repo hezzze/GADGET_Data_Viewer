@@ -11,5 +11,4 @@ $ npm install -g ionic
 $ npm install
 ```
 
-Ionic view ID: ee21057f
 
